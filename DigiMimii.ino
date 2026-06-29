@@ -26,6 +26,58 @@ struct WiFiInfo {
 // ------------------------------------------------------
 WiFiInfo wifiList[32];
 
+
+// ------------------------------------------------------
+// ペンタトニックスケール
+//
+// Wi-Fiチャンネル(CH1～CH13)を
+// MIDIノート番号へ変換するテーブル
+//
+// 60 = ド(C4)
+// 62 = レ(D4)
+// 64 = ミ(E4)
+// 67 = ソ(G4)
+// 69 = ラ(A4)
+// ------------------------------------------------------
+const int scaleTable[13] = {
+  60,  // CH1  → ド(C4)
+  62,  // CH2  → レ(D4)
+  64,  // CH3  → ミ(E4)
+  67,  // CH4  → ソ(G4)
+  69,  // CH5  → ラ(A4)
+
+  72,  // CH6  → ド(C5)
+  74,  // CH7  → レ(D5)
+  76,  // CH8  → ミ(E5)
+  79,  // CH9  → ソ(G5)
+  81,  // CH10 → ラ(A5)
+
+  84,  // CH11 → ド(C6)
+  86,  // CH12 → レ(D6)
+  88   // CH13 → ミ(E6)
+};
+
+
+// ------------------------------------------------------
+// Wi-FiチャンネルをMIDIノート番号へ変換する
+//
+// 引数
+//   channel : Wi-Fiチャンネル(1～13)
+//
+// 戻り値
+//   MIDIノート番号
+// ------------------------------------------------------
+int channelToMidiNote(int channel) {
+  // 範囲外なら真ん中のド(C4)
+  if (channel < 1 || channel > 13) {
+    return 60;
+  }
+
+  // テーブルから取得(配列の添字は0から始まり、Wi-Fiチャネルは1からのため-1を実施)
+  return scaleTable[channel - 1];
+}
+
+
 // ------------------------------------------------------
 // 初期化処理
 // 電源投入時に1回だけ実行される
@@ -75,9 +127,6 @@ void loop() {
   // 周囲のWi-Fiをスキャン
   int n = WiFi.scanNetworks();
 
-  // Wi-FiタスクへCPU時間を渡す
-  delay(10);
-
   // スキャン失敗時
   if (n < 0) {
 
@@ -91,6 +140,21 @@ void loop() {
     return;
   }
 
+  // ----------------------------------------------------
+  // Wi-Fi情報を構造体へ保存する
+  // 最大32件まで保存
+  // ----------------------------------------------------
+  int count = min(n, 32);
+  for (int i = 0; i < count; i++) {
+    wifiList[i].ssid = WiFi.SSID(i);
+    wifiList[i].bssid = WiFi.BSSIDstr(i);
+    wifiList[i].rssi = WiFi.RSSI(i);
+    wifiList[i].channel = WiFi.channel(i);
+  }
+
+  // ----------------------------------------------------
+  // LCD表示
+  // ----------------------------------------------------
   // 画面クリア
   M5.Display.fillScreen(BLACK);
 
@@ -98,24 +162,40 @@ void loop() {
   M5.Display.setCursor(0, 0);
 
   // 検出数表示
-  M5.Display.printf("%d AP Found\n", n);
+  M5.Display.setTextColor(YELLOW);
+  M5.Display.printf("%d AP Found\n", count);
+
 
   // 最大8件まで表示
   for (int i = 0; i < n && i < 8; i++) {
     // SSID取得
-    String ssid = WiFi.SSID(i);
+    String ssid = wifiList[i].ssid;
 
     // RSSI取得
-    int rssi = WiFi.RSSI(i);
+    int rssi = wifiList[i].rssi;
 
     // BSSID取得
-    String bssid = WiFi.BSSIDstr(i);
+    String bssid = wifiList[i].bssid;
 
+    // Channnel取得
+    int channel = wifiList[i].channel;
+
+    // Wi-FiチャンネルからMIDIノート番号へ変換
+    int note = channelToMidiNote(channel);
+
+    // SSID・RSSI表示
     M5.Display.setTextColor(WHITE);
-    M5.Display.printf("%s : %d dBm\n",
+    M5.Display.printf("%s:%d dBm:",
                       ssid.c_str(),
                       rssi);
 
+    // チャンネルとMIDIノート番号を表示
+    M5.Display.setTextColor(GREEN);
+    M5.Display.printf("CH=%2d NOTE=%2d\n",
+                      channel,
+                      note);
+
+    // BSSID表示
     M5.Display.setTextColor(CYAN);
     M5.Display.printf("%s\n",
                       bssid.c_str());

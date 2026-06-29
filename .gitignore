@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Arduino
+build/
+*.bin
+*.hex
+*.elf
+
+# VSCode
+.vscode/
+
+# Temporary
+*.tmp

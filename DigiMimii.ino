@@ -199,7 +199,7 @@ void loop() {
 
 
   // 最大8件まで表示
-  for (int i = 0; i < n && i < 8; i++) {
+  for (int i = 0; i < count && i < 8; i++) {
     // SSID取得
     String ssid = wifiList[i].ssid;
 

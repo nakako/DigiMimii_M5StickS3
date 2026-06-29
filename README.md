@@ -9,9 +9,9 @@
 - ボードマネージャ: M5Stick by M5Stack Offcial Ver3.2.6(3.3.7だとWifi関連が動作しない)
 
 # パラメータと音の関係
-  固有ID(bssid): 楽器種別
-  電波強度(rssi): 音量 
-  チャンネル(channel): 音階
+- 固有ID(bssid): 楽器種別
+- 電波強度(rssi): 音量 
+- チャンネル(channel): 音階
 
 # 音階
  ペンタトニックスケール（Cメジャー）を利用

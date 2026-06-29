@@ -79,6 +79,38 @@ int channelToMidiNote(int channel) {
 
 
 // ------------------------------------------------------
+// MIDIノート番号を音名へ変換する
+//
+// 引数
+//   note : MIDIノート番号
+//
+// 戻り値
+//   音名（C4, D4など）
+// ------------------------------------------------------
+String midiNoteToName(int note) {
+  switch (note) {
+    case 60: return "C4";
+    case 62: return "D4";
+    case 64: return "E4";
+    case 67: return "G4";
+    case 69: return "A4";
+
+    case 72: return "C5";
+    case 74: return "D5";
+    case 76: return "E5";
+    case 79: return "G5";
+    case 81: return "A5";
+
+    case 84: return "C6";
+    case 86: return "D6";
+    case 88: return "E6";
+
+    default: return "---";
+  }
+}
+
+
+// ------------------------------------------------------
 // 初期化処理
 // 電源投入時に1回だけ実行される
 // ------------------------------------------------------
@@ -183,6 +215,9 @@ void loop() {
     // Wi-FiチャンネルからMIDIノート番号へ変換
     int note = channelToMidiNote(channel);
 
+    // MIDIノート番号を音名へ変換
+    String noteName = midiNoteToName(note);
+
     // SSID・RSSI表示
     M5.Display.setTextColor(WHITE);
     M5.Display.printf("%s : %d dBm : \n",
@@ -196,9 +231,10 @@ void loop() {
 
     // チャンネルとMIDIノート番号を表示
     M5.Display.setTextColor(GREEN);
-    M5.Display.printf("CH=%2d NOTE=%2d\n",
+    M5.Display.printf("CH=%2d NOTE=%2d(%s)\n",
                       channel,
-                      note);
+                      note,
+                      noteName.c_str());
   }
 
   // 3秒待って再スキャン

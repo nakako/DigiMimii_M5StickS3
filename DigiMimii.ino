@@ -185,20 +185,20 @@ void loop() {
 
     // SSID・RSSI表示
     M5.Display.setTextColor(WHITE);
-    M5.Display.printf("%s:%d dBm:",
+    M5.Display.printf("%s : %d dBm : \n",
                       ssid.c_str(),
                       rssi);
+
+    // BSSID表示
+    M5.Display.setTextColor(CYAN);
+    M5.Display.printf("%s,  ",
+                      bssid.c_str());
 
     // チャンネルとMIDIノート番号を表示
     M5.Display.setTextColor(GREEN);
     M5.Display.printf("CH=%2d NOTE=%2d\n",
                       channel,
                       note);
-
-    // BSSID表示
-    M5.Display.setTextColor(CYAN);
-    M5.Display.printf("%s\n",
-                      bssid.c_str());
   }
 
   // 3秒待って再スキャン
